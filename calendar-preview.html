@@ -64,15 +64,20 @@ th {
     padding: clamp(6px, 2.2vw, 8px);
 }
 tr:first-child th {
-    position: relative;
     font-size: clamp(16px, 5.5vw, 18px);
     font-weight: bold;
     border-left: none;
     border-top: none;
 }
-tr:first-child th > span {
+.calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(10px, 3vw, 16px);
+}
+.calendar-title {
     display: block;
-    padding: 0 clamp(34px, 12vw, 48px);
+    min-width: 0;
 }
 td:last-child, th:last-child {
   border-right: none;
@@ -142,13 +147,12 @@ td > span:hover {
     line-height: 1;
     height: clamp(24px, 8vw, 30px);
     width: clamp(24px, 8vw, 30px);
-    vertical-align: middle;
     border-radius: 100%;
-    position: absolute;
-    top: clamp(10px, 3vw, 14px);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
 }
-.boto-next { right: clamp(6px, 2vw, 10px); }
-.boto-prev { left: clamp(6px, 2vw, 10px); }
 .boto-next:hover,
 .boto-prev:hover {
     background: rgba(0,0,0,0.2);
@@ -262,6 +266,8 @@ function calendari(widget, data)
     var fila = document.createElement('tr');
     var titol = document.createElement('th');
     titol.setAttribute('colspan', 7);
+    var header = document.createElement('div');
+    header.className = 'calendar-header';
 
     var boto_prev = document.createElement('button');
     boto_prev.className = 'boto-prev';
@@ -271,11 +277,15 @@ function calendari(widget, data)
     boto_next.className = 'boto-next';
     boto_next.innerHTML = '&#9656;';
 
-    titol.appendChild(boto_prev);
-    titol.appendChild(document.createElement('span')).innerHTML = 
+    var titolText = document.createElement('span');
+    titolText.className = 'calendar-title';
+    titolText.innerHTML =
         mesos[data.getMonth()] + '<span class="any">' + data.getFullYear() + '</span>';
 
-    titol.appendChild(boto_next);
+    header.appendChild(boto_prev);
+    header.appendChild(titolText);
+    header.appendChild(boto_next);
+    titol.appendChild(header);
 
     boto_prev.onclick = function() {
         data.setMonth(data.getMonth() - 1);
