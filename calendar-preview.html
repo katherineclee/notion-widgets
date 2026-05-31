@@ -7,6 +7,17 @@
     <title>Calendar</title>
 
     <style>
+        html, body {
+    width: 100%;
+    margin: 0;
+}
+
+        *,
+        *::before,
+        *::after {
+    box-sizing: border-box;
+}
+
         body {
     font-family: 'Arial', sans-serif;
     background-color: #fff;
@@ -18,6 +29,7 @@
     justify-content: center;
   flex-direction: column;
   min-height: 100%;
+  width: 100%;
 }
 
 button::-moz-focus-inner { 
@@ -27,10 +39,10 @@ button::-moz-focus-inner {
 
 #calendari {
     margin:  0 auto;
-    /* height: 330px; */
-    /* width: 350px; */
-    font-size: 12px;
-    /* box-shadow: 0px 1px 4px rgba(0,0,0,0.4); */
+    width: 100%;
+    max-width: 100%;
+    position: relative;
+    font-size: clamp(11px, 2.8vw, 12px);
 }
 table {
     border-collapse: collapse;
@@ -38,8 +50,10 @@ table {
     box-shadow: 0px 1px 3px rgba(0,0,0,0.2);
     background-color: #fff;
     position: absolute;
-
-
+    top: 0;
+    left: 0;
+    width: 100%;
+    max-width: 100%;
 }
 
 
@@ -48,13 +62,18 @@ td,th {
     background-color: #fff;
 }
 th {
-    padding: 8px;
+    padding: clamp(6px, 2.2vw, 8px);
 }
 tr:first-child th {
-    font-size: 16px;
+    position: relative;
+    font-size: clamp(16px, 5.5vw, 18px);
     font-weight: bold;
     border-left: none;
     border-top: none;
+}
+tr:first-child th > span {
+    display: block;
+    padding: 0 clamp(34px, 12vw, 48px);
 }
 td:last-child, th:last-child {
   border-right: none;
@@ -69,15 +88,15 @@ th {
     font-weight: normal;
 }
 th .any {
-    font-size: 10px;
+    font-size: clamp(10px, 3.4vw, 12px);
     font-weight: normal;
     display: block;
     text-shadow: none;
     color: rgba(0,0,0,0.4);
 }
 tr:nth-child(2) th {
-    padding: 4px;
-    font-size: 11px;
+    padding: clamp(4px, 1.8vw, 6px);
+    font-size: clamp(10px, 3.6vw, 12px);
 }
 td {
     padding: 0;
@@ -85,11 +104,11 @@ td {
 }
 td>span {
     color: #555;
-    padding: 8px;
+    padding: clamp(10px, 3.4vw, 14px) 0;
     display: block;
     border: 1px solid transparent;
     transition: border 0.3s ease;
-    font-size: 11px;
+    font-size: clamp(11px, 4vw, 14px);
 }
 
 td:nth-child(even)>span {
@@ -117,20 +136,20 @@ td > span:hover {
     color: #fff;
     font-family: inherit;
     border: none;
-    font-size: 15px;
+    font-size: clamp(14px, 4.2vw, 16px);
     font-weight: bold;
     text-shadow: inherit;
-    padding: 2px 8px 4px 8px;
-    line-height: 1px;
-    height: 24px;
-    width: 24px;
+    padding: 0;
+    line-height: 1;
+    height: clamp(24px, 8vw, 30px);
+    width: clamp(24px, 8vw, 30px);
     vertical-align: middle;
     border-radius: 100%;
     position: absolute;
-    top: 12px;
+    top: clamp(10px, 3vw, 14px);
 }
-.boto-next { right: 8px; padding-left: 10px; }
-.boto-prev { left: 8px; padding-right: 10px;}
+.boto-next { right: clamp(6px, 2vw, 10px); }
+.boto-prev { left: clamp(6px, 2vw, 10px); }
 .boto-next:hover,
 .boto-prev:hover {
     background: rgba(0,0,0,0.2);
@@ -199,6 +218,15 @@ Number.prototype.pad = function(num) {
     for(var i = 0; i < (num-this.toString().length); i++)
         str += '0';
     return str += this.toString();
+}
+
+function actualitzaAlcada(widget)
+{
+    var taulaActiva = widget.getElementsByClassName('actiu')[0] ||
+        widget.getElementsByTagName('table')[0];
+
+    if(taulaActiva)
+        widget.style.height = taulaActiva.offsetHeight + 'px';
 }
 
 function calendari(widget, data)
@@ -312,10 +340,13 @@ function calendari(widget, data)
         e.appendChild(fila);
     }
 
+    actualitzaAlcada(widget);
+
     setTimeout(function() {
         e.className = 'actiu';
         original.className +=
         diff === 0 ? ' amagat-dreta' : ' amagat-esquerra';
+        actualitzaAlcada(widget);
     }, 20);
 
     original.className = 'inactiu';
@@ -324,11 +355,16 @@ function calendari(widget, data)
         var inactius = document.getElementsByClassName('inactiu');
         for(var i = 0; i < inactius.length; i++)
             widget.removeChild(inactius[i]);
+        actualitzaAlcada(widget);
     }, 1000);
 
 }
 
 calendari(document.getElementById('calendari'), new Date());
+
+window.addEventListener('resize', function() {
+    actualitzaAlcada(document.getElementById('calendari'));
+});
 
     </script>
 </body>
