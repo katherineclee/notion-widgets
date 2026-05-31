@@ -232,24 +232,40 @@ function actualitzaAlcada(widget)
         widget.style.height = taulaActiva.offsetHeight + 'px';
 }
 
-function calendari(widget, data)
+function mateixDia(a, b)
 {
+    return a.getFullYear() == b.getFullYear() &&
+        a.getMonth() == b.getMonth() &&
+        a.getDate() == b.getDate();
+}
+
+function mesVisible(data)
+{
+    return new Date(data.getFullYear(), data.getMonth(), 1);
+}
+
+function mouMes(data, increment)
+{
+    return new Date(data.getFullYear(), data.getMonth() + increment, 1);
+}
+
+function calendari(widget, data, avui)
+{
+    var vista = mesVisible(data);
 
     var original = widget.getElementsByClassName('actiu')[0];
 
     if(typeof original === 'undefined')
     {
         original = document.createElement('table');
-        original.setAttribute('data-actual',
-			      data.getFullYear() + '/' +
-			      data.getMonth().pad(2) + '/' +
-			      data.getDate().pad(2))
+        original.setAttribute('data-actual', vista.getTime())
         widget.appendChild(original);
     }
 
-    var diff = data - new Date(original.getAttribute('data-actual'));
-
-    diff = new Date(diff).getMonth();
+    var originalActual = new Date(Number(original.getAttribute('data-actual')));
+    var diff =
+        (vista.getFullYear() - originalActual.getFullYear()) * 12 +
+        (vista.getMonth() - originalActual.getMonth());
 
     var e = document.createElement('table');
 
@@ -258,10 +274,7 @@ function calendari(widget, data)
 
     widget.appendChild(e);
 
-    e.setAttribute('data-actual',
-                   data.getFullYear() + '/' +
-                   data.getMonth().pad(2) + '/' +
-                   data.getDate().pad(2))
+    e.setAttribute('data-actual', vista.getTime())
 
     var fila = document.createElement('tr');
     var titol = document.createElement('th');
@@ -280,7 +293,7 @@ function calendari(widget, data)
     var titolText = document.createElement('span');
     titolText.className = 'calendar-title';
     titolText.innerHTML =
-        mesos[data.getMonth()] + '<span class="any">' + data.getFullYear() + '</span>';
+        mesos[vista.getMonth()] + '<span class="any">' + vista.getFullYear() + '</span>';
 
     header.appendChild(boto_prev);
     header.appendChild(titolText);
@@ -288,13 +301,11 @@ function calendari(widget, data)
     titol.appendChild(header);
 
     boto_prev.onclick = function() {
-        data.setMonth(data.getMonth() - 1);
-        calendari(widget, data);
+        calendari(widget, mouMes(vista, -1), avui);
     };
 
     boto_next.onclick = function() {
-        data.setMonth(data.getMonth() + 1);
-        calendari(widget, data);
+        calendari(widget, mouMes(vista, 1), avui);
     };
 
     fila.appendChild(titol);
@@ -312,10 +323,10 @@ function calendari(widget, data)
 
     /* Obtinc el dia que va acabar el mes anterior */
     var inici_mes =
-        new Date(data.getFullYear(), data.getMonth(), -1).getDay();
+        new Date(vista.getFullYear(), vista.getMonth(), -1).getDay();
 
-    var actual = new Date(data.getFullYear(),
-			  data.getMonth(),
+    var actual = new Date(vista.getFullYear(),
+			  vista.getMonth(),
 			  -inici_mes);
 
     /* 6 setmanes per cobrir totes les posiblitats
@@ -334,12 +345,11 @@ function calendari(widget, data)
 
             span.innerHTML = actual.getDate();
 
-            if(actual.getMonth() !== data.getMonth())
+            if(actual.getMonth() !== vista.getMonth())
                 cela.className = 'fora';
 
             /* Si es avui el decorem */
-            if(data.getDate() == actual.getDate() &&
-	       data.getMonth() == actual.getMonth())
+            if(mateixDia(avui, actual))
 		cela.className = 'avui';
 
 	    actual.setDate(actual.getDate()+1);
@@ -369,7 +379,8 @@ function calendari(widget, data)
 
 }
 
-calendari(document.getElementById('calendari'), new Date());
+var avui = new Date();
+calendari(document.getElementById('calendari'), avui, avui);
 
 window.addEventListener('resize', function() {
     actualitzaAlcada(document.getElementById('calendari'));
