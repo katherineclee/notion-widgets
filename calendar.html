@@ -45,7 +45,7 @@ button::-moz-focus-inner {
     font-size: clamp(11px, 2.8vw, 12px);
 }
 table {
-    --month-color: #9DB88E;
+    --month-color: #819774;
     --month-color-light: #ACC39F;
     --month-color-warm: #AAB78A;
     --month-color-button: #859C79;
@@ -77,11 +77,13 @@ tr:first-child th {
     background-color: var(--month-color);
 }
 .calendar-header {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: clamp(10px, 3vw, 16px);
     padding: clamp(6px, 2.2vw, 8px);
+    padding-left: clamp(66px, 20vw, 88px);
+    padding-right: clamp(66px, 20vw, 88px);
     background: linear-gradient(
         90deg,
         var(--month-color-light),
@@ -95,9 +97,19 @@ tr:first-child th {
         color-mix(in srgb, var(--month-color) 80%, #E0B57A)
     );
 }
+.calendar-controls {
+    position: absolute;
+    left: clamp(8px, 2.4vw, 12px);
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    gap: clamp(8px, 2vw, 10px);
+}
 .calendar-title {
     display: block;
     min-width: 0;
+    text-align: center;
 }
 td:last-child, th:last-child {
   border-right: none;
@@ -121,7 +133,7 @@ th .any {
 tr:nth-child(2) th {
     padding: clamp(4px, 1.8vw, 6px);
     font-size: clamp(10px, 3.6vw, 12px);
-    background-color: #7a7a7a;
+    background-color: var(--month-color-light);
 }
 td {
     padding: 0;
@@ -157,7 +169,7 @@ td.avui > span:hover {
     color: #fff;
 }
 .boto-next, .boto-prev {
-    background-color: var(--month-color-button);
+    background-color: var(--month-color-light);
     color: #fff;
     font-family: inherit;
     border: none;
@@ -176,7 +188,7 @@ td.avui > span:hover {
 }
 .boto-next:hover,
 .boto-prev:hover {
-    background-color: var(--month-color-button-hover);
+    background-color: var(--month-color-button);
 }
 button:hover { cursor: pointer; }
 button:focus { outline: none; }
@@ -239,84 +251,84 @@ var dies_abr = [
 
 var colors_mes = [
     {
-        base: '#AEBEC7',
+        base: '#8F9CA3',
         light: '#BAC8CF',
         warm: '#B8BCB8',
         button: '#94A2A9',
         buttonHover: '#7D898F'
     },
     {
-        base: '#BDC4C1',
+        base: '#9BA19E',
         light: '#C7CDCA',
         warm: '#C4C1B3',
         button: '#A1A7A4',
         buttonHover: '#888D8B'
     },
     {
-        base: '#B7C2A4',
+        base: '#969F86',
         light: '#C2CBB2',
         warm: '#BFBF9C',
         button: '#9CA58B',
         buttonHover: '#848C76'
     },
     {
-        base: '#A9BE97',
+        base: '#8B9C7C',
         light: '#B6C8A7',
         warm: '#B4BC91',
         button: '#90A280',
         buttonHover: '#7A896D'
     },
     {
-        base: '#9DB88E',
+        base: '#819774',
         light: '#ACC39F',
         warm: '#AAB78A',
         button: '#859C79',
         buttonHover: '#718466'
     },
     {
-        base: '#AAB58A',
+        base: '#8B9471',
         light: '#B7C09C',
         warm: '#B5B587',
         button: '#909A75',
         buttonHover: '#7A8263'
     },
     {
-        base: '#C8B085',
+        base: '#A4906D',
         light: '#D0BC97',
         warm: '#CDB183',
         button: '#AA9671',
         buttonHover: '#907F60'
     },
     {
-        base: '#D2AA7E',
+        base: '#AC8B67',
         light: '#D9B791',
         warm: '#D5AC7D',
         button: '#B2906B',
         buttonHover: '#977A5B'
     },
     {
-        base: '#C79A6B',
+        base: '#A37E58',
         light: '#CFA981',
         warm: '#CC9F6E',
         button: '#A9835B',
         buttonHover: '#8F6F4D'
     },
     {
-        base: '#C78563',
+        base: '#A36D51',
         light: '#CF977A',
         warm: '#CC8F68',
         button: '#A97154',
         buttonHover: '#8F6047'
     },
     {
-        base: '#B67D72',
+        base: '#95665D',
         light: '#C19087',
         warm: '#BE8874',
         button: '#9B6A61',
         buttonHover: '#835A52'
     },
     {
-        base: '#9D879D',
+        base: '#816F81',
         light: '#AC99AC',
         warm: '#AA9096',
         button: '#857385',
@@ -401,6 +413,8 @@ function calendari(widget, data, avui)
     titol.setAttribute('colspan', 7);
     var header = document.createElement('div');
     header.className = 'calendar-header';
+    var controls = document.createElement('div');
+    controls.className = 'calendar-controls';
 
     var boto_prev = document.createElement('button');
     boto_prev.className = 'boto-prev';
@@ -415,9 +429,10 @@ function calendari(widget, data, avui)
     titolText.innerHTML =
         mesos[vista.getMonth()] + '<span class="any">' + vista.getFullYear() + '</span>';
 
-    header.appendChild(boto_prev);
+    controls.appendChild(boto_prev);
+    controls.appendChild(boto_next);
+    header.appendChild(controls);
     header.appendChild(titolText);
-    header.appendChild(boto_next);
     titol.appendChild(header);
 
     boto_prev.onclick = function() {
