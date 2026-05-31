@@ -45,6 +45,11 @@ button::-moz-focus-inner {
     font-size: clamp(11px, 2.8vw, 12px);
 }
 table {
+    --month-color: #9DB88E;
+    --month-color-light: #ACC39F;
+    --month-color-warm: #AAB78A;
+    --month-color-button: #859C79;
+    --month-color-button-hover: #718466;
     border-collapse: collapse;
     table-layout: fixed;
     background-color: #fff;
@@ -64,16 +69,31 @@ th {
     padding: clamp(6px, 2.2vw, 8px);
 }
 tr:first-child th {
+    padding: 0;
     font-size: clamp(16px, 5.5vw, 18px);
     font-weight: bold;
     border-left: none;
     border-top: none;
+    background-color: var(--month-color);
 }
 .calendar-header {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: clamp(10px, 3vw, 16px);
+    padding: clamp(6px, 2.2vw, 8px);
+    background: linear-gradient(
+        90deg,
+        var(--month-color-light),
+        var(--month-color),
+        var(--month-color-warm)
+    );
+    background: linear-gradient(
+        90deg,
+        color-mix(in srgb, var(--month-color) 85%, white),
+        var(--month-color),
+        color-mix(in srgb, var(--month-color) 80%, #E0B57A)
+    );
 }
 .calendar-title {
     display: block;
@@ -86,7 +106,7 @@ td:last-child, th:last-child {
 th {
     border-top: 1px solid rgba(0,0,0,0.1);
     border-right: 1px solid rgba(0,0,0,0.1);
-    background-color: #9b59b6;
+    background-color: var(--month-color);
     color: #fff;
     text-shadow: 0px -1px 0px rgba(0,0,0,0.2);
     font-weight: normal;
@@ -96,7 +116,7 @@ th .any {
     font-weight: normal;
     display: block;
     text-shadow: none;
-    color: rgba(0,0,0,0.4);
+    color: rgba(255,255,255,0.82);
 }
 tr:nth-child(2) th {
     padding: clamp(4px, 1.8vw, 6px);
@@ -120,7 +140,7 @@ td:nth-child(even)>span {
 }
 td.avui>span {
     font-weight: bold;
-    background-color: #9b59b6;
+    background-color: var(--month-color);
     color: #fff;
     border: 1px solid rgba(0,0,0,0.1);
 }
@@ -128,11 +148,15 @@ td.fora > span {
     opacity: 0.2;
 }
 td > span:hover {
-    background: #a57cb6;
+    background: var(--month-color-light);
+    color: #555;
+}
+td.avui > span:hover {
+    background-color: var(--month-color);
     color: #fff;
 }
 .boto-next, .boto-prev {
-    background: rgba(0,0,0,0.1);
+    background-color: var(--month-color-button);
     color: #fff;
     font-family: inherit;
     border: none;
@@ -151,7 +175,7 @@ td > span:hover {
 }
 .boto-next:hover,
 .boto-prev:hover {
-    background: rgba(0,0,0,0.2);
+    background-color: var(--month-color-button-hover);
 }
 button:hover { cursor: pointer; }
 button:focus { outline: none; }
@@ -212,6 +236,93 @@ var dies_abr = [
     'S'
 ];
 
+var colors_mes = [
+    {
+        base: '#AEBEC7',
+        light: '#BAC8CF',
+        warm: '#B8BCB8',
+        button: '#94A2A9',
+        buttonHover: '#7D898F'
+    },
+    {
+        base: '#BDC4C1',
+        light: '#C7CDCA',
+        warm: '#C4C1B3',
+        button: '#A1A7A4',
+        buttonHover: '#888D8B'
+    },
+    {
+        base: '#B7C2A4',
+        light: '#C2CBB2',
+        warm: '#BFBF9C',
+        button: '#9CA58B',
+        buttonHover: '#848C76'
+    },
+    {
+        base: '#A9BE97',
+        light: '#B6C8A7',
+        warm: '#B4BC91',
+        button: '#90A280',
+        buttonHover: '#7A896D'
+    },
+    {
+        base: '#9DB88E',
+        light: '#ACC39F',
+        warm: '#AAB78A',
+        button: '#859C79',
+        buttonHover: '#718466'
+    },
+    {
+        base: '#AAB58A',
+        light: '#B7C09C',
+        warm: '#B5B587',
+        button: '#909A75',
+        buttonHover: '#7A8263'
+    },
+    {
+        base: '#C8B085',
+        light: '#D0BC97',
+        warm: '#CDB183',
+        button: '#AA9671',
+        buttonHover: '#907F60'
+    },
+    {
+        base: '#D2AA7E',
+        light: '#D9B791',
+        warm: '#D5AC7D',
+        button: '#B2906B',
+        buttonHover: '#977A5B'
+    },
+    {
+        base: '#C79A6B',
+        light: '#CFA981',
+        warm: '#CC9F6E',
+        button: '#A9835B',
+        buttonHover: '#8F6F4D'
+    },
+    {
+        base: '#C78563',
+        light: '#CF977A',
+        warm: '#CC8F68',
+        button: '#A97154',
+        buttonHover: '#8F6047'
+    },
+    {
+        base: '#B67D72',
+        light: '#C19087',
+        warm: '#BE8874',
+        button: '#9B6A61',
+        buttonHover: '#835A52'
+    },
+    {
+        base: '#9D879D',
+        light: '#AC99AC',
+        warm: '#AA9096',
+        button: '#857385',
+        buttonHover: '#716171'
+    }
+];
+
 Number.prototype.pad = function(num) {
     var str = '';
     for(var i = 0; i < (num-this.toString().length); i++)
@@ -245,6 +356,17 @@ function mouMes(data, increment)
     return new Date(data.getFullYear(), data.getMonth() + increment, 1);
 }
 
+function aplicaTemaMes(element, monthIndex)
+{
+    var colors = colors_mes[monthIndex];
+
+    element.style.setProperty('--month-color', colors.base);
+    element.style.setProperty('--month-color-light', colors.light);
+    element.style.setProperty('--month-color-warm', colors.warm);
+    element.style.setProperty('--month-color-button', colors.button);
+    element.style.setProperty('--month-color-button-hover', colors.buttonHover);
+}
+
 function calendari(widget, data, avui)
 {
     var vista = mesVisible(data);
@@ -267,6 +389,7 @@ function calendari(widget, data, avui)
 
     e.className = diff  === 0 ? 'amagat-esquerra' : 'amagat-dreta';
     e.innerHTML = '';
+    aplicaTemaMes(e, vista.getMonth());
 
     widget.appendChild(e);
 
